@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import { Bookmark, MessageCircle, MoreHorizontal, Send } from "lucide-react";
@@ -14,12 +14,22 @@ import { Badge } from "./ui/badge";
 const Post = ({ post }) => {
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
-  const { user } = useSelector((store) => store.auth);
+  const { user } = useSelector((store) => store.auth) || {};
   const { posts } = useSelector((store) => store.post);
-  const [liked, setLiked] = useState(post.likes.includes(user?._id) || false);
+  const { users = [] } = useSelector((store) => store.user || {});
+  const [liked, setLiked] = useState(
+    (post.likes || []).includes(user?._id) || false
+  );
   const [postLike, setPostLike] = useState(post.likes.length);
   const [comment, setComment] = useState(post.comments);
+  const [followed, setFollowed] = useState(
+    (post.author.followers || []).includes(user?._id)
+  );
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    setFollowed((post.author.followers || []).includes(users?._id));
+  }, [post.author.followers, user]);
 
   const changeEventHandler = (e) => {
     const inputText = e.target.value;
@@ -125,6 +135,46 @@ const Post = ({ post }) => {
     }
   };
 
+  const followOrUnfollowHandler = async () => {
+    try {
+      const action = followed ? "unfollow" : "follow";
+      const res = await axios.post(
+        `https://short-platfrom.onrender.com/api/v1/user/${post.author._id}/${action}`,
+        {},
+        { withCredentials: true }
+      );
+
+      if (res.data.success) {
+        setFollowed((prevFollowed) => {
+          const newFollowedState = !prevFollowed;
+
+          if (Array.isArray(users)) {
+            const updatedUsersData = users.map((u) =>
+              u._id === post.author._id
+                ? {
+                    ...u,
+                    followers: newFollowedState
+                      ? [...u.followers, user._id]
+                      : u.followers.filter((id) => id !== user._id),
+                  }
+                : u
+            );
+
+            dispatch(setUsers(updatedUsersData));
+          }
+          return newFollowedState;
+        });
+
+        toast.success(res.data.message);
+      } else {
+        toast.error("Failed to update follow status.");
+      }
+    } catch (error) {
+      console.error("Error following/unfollowing:", error);
+      console.log("Something went wrong, please try again.");
+    }
+  };
+
   return (
     <div className="my-8 w-full max-w-sm mx-auto">
       <div className="flex items-center justify-between">
@@ -147,10 +197,11 @@ const Post = ({ post }) => {
           <DialogContent className="flex flex-col items-center text-sm text-center">
             {post?.author?._id !== user?._id && (
               <Button
+                onClick={followOrUnfollowHandler}
                 variant="ghost"
                 className="cursor-pointer w-fit text-[#ED4956] font-bold"
               >
-                Unfollow
+                {followed ? "unfollow" : "Follow"}
               </Button>
             )}
 

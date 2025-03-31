@@ -1,10 +1,23 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { followUser, unfollowUser } from "@/redux/followSlice";
 
 const SuggestedUsers = () => {
   const { suggestedUsers } = useSelector((store) => store.auth);
+  const { following = [] } = useSelector((store) => store.follow);
+  const { users = [] } = useSelector((store) => store.user || {});
+  const dispatch = useDispatch();
+
+  const handleFollowToggle = (userId) => {
+    if (following.includes(userId)) {
+      dispatch(unfollowUser({ userId }));
+    } else {
+      dispatch(followUser({ userId }));
+    }
+  };
+
   return (
     <div className="my-10">
       <div className="flex items-center justify-between text-sm">
@@ -12,6 +25,8 @@ const SuggestedUsers = () => {
         <span className="font-medium cursor-pointer">See All</span>
       </div>
       {(suggestedUsers ?? []).map((user) => {
+        const isFollowed = following.includes(user._id);
+
         return (
           <div
             key={user._id}
@@ -33,8 +48,13 @@ const SuggestedUsers = () => {
                 </span>
               </div>
             </div>
-            <span className="text-[#3BADF8] text-xs font-bold cursor-pointer hover:text-[#3495d6]">
-              Follow
+            <span
+              className={`text-xs font-bold cursor-pointer ${
+                isFollowed ? "text-[#3495d6]" : "text-[#3BADF8]"
+              }`}
+              onClick={() => handleFollowToggle(user._id)}
+            >
+              {isFollowed ? "unfollow" : "Follow"}
             </span>
           </div>
         );
