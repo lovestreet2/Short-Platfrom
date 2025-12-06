@@ -1,18 +1,21 @@
 import { useEffect } from "react";
-import ChatPage from "./components/ChatPage";
-import EditProfile from "./components/EditProfile";
-import Home from "./components/Home";
-import Login from "./components/Login";
-import MainLayout from "./components/MainLayout";
-import Profile from "./components/Profile";
-import Signup from "./components/Signup";
+import ChatPage from "./components/chats/ChatPage";
+import EditProfile from "./components/dashboard/EditProfile";
+import Home from "./components/dashboard/Home";
+import Login from "./components/loginsignup/Login";
+import MainLayout from "./components/dashboard/MainLayout";
+import Profile from "./components/dashboard/Profile";
+import Signup from "./components/loginsignup/Signup";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { io } from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
 import { setSocket } from "./redux/socketSlice";
 import { setOnlineUsers } from "./redux/chatSlice";
 import { setLikeNotification } from "./redux/rtnSlice";
-import ProtectedRoutes from "./components/ProtectedRoutes";
+import ProtectedRoutes from "./components/loginsignup/ProtectedRoutes";
+import Notification from "./components/feed/Notification";
+import Explore from "./components/feed/Explore";
+import Search from "./components/search/Search";
 
 const browserRouter = createBrowserRouter([
   {
@@ -53,6 +56,30 @@ const browserRouter = createBrowserRouter([
         element: (
           <ProtectedRoutes>
             <ChatPage />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/notification",
+        element: (
+          <ProtectedRoutes>
+            <Notification />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/explore",
+        element: (
+          <ProtectedRoutes>
+            <Explore />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/search",
+        element: (
+          <ProtectedRoutes>
+            <Search />
           </ProtectedRoutes>
         ),
       },

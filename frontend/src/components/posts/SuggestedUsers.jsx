@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { followUser, unfollowUser } from "@/redux/followSlice";
 
 const SuggestedUsers = () => {
@@ -49,9 +49,8 @@ const SuggestedUsers = () => {
               </div>
             </div>
             <span
-              className={`text-xs font-bold cursor-pointer ${
-                isFollowed ? "text-[#3495d6]" : "text-[#3BADF8]"
-              }`}
+              className={`text-xs font-bold cursor-pointer ${isFollowed ? "text-[#3495d6]" : "text-[#3BADF8]"
+                }`}
               onClick={() => handleFollowToggle(user._id)}
             >
               {isFollowed ? "unfollow" : "Follow"}

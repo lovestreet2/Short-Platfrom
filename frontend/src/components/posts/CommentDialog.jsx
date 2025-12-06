@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Link } from "react-router-dom";
 import { MoreHorizontal } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import Comment from "./Comment";
-import axios from "axios";
 import { toast } from "sonner";
 import { setPosts } from "@/redux/postSlice";
+import api from "@/services/api";
 
 const CommentDialog = ({ open, setOpen }) => {
   const [text, setText] = useState("");
@@ -33,8 +33,8 @@ const CommentDialog = ({ open, setOpen }) => {
 
   const sendMessageHandler = async () => {
     try {
-      const res = await axios.post(
-        `https://short-platfrom.onrender.com/api/v1/post/${selectedPost?._id}/comment`,
+      const res = await api.post(
+        `/post/${selectedPost?._id}/comment`,
         { text },
         {
           headers: {

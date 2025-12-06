@@ -1,15 +1,15 @@
 import { Dialog } from "@radix-ui/react-dialog";
 import React, { useRef, useState } from "react";
-import { DialogContent, DialogHeader } from "./ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Textarea } from "./ui/textarea";
-import { Button } from "./ui/button";
+import { DialogContent, DialogHeader } from "../ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Textarea } from "../ui/textarea";
+import { Button } from "../ui/button";
 import { readFileAsDataURL } from "@/lib/utils";
 import { Loader2, User } from "lucide-react";
 import { toast } from "sonner";
-import axios from "axios";
 import { setPosts } from "@/redux/postSlice";
 import { useDispatch, useSelector } from "react-redux";
+import api from "@/services/api";
 
 const CreatePost = ({ open, setOpen }) => {
   const imageRef = useRef();
@@ -38,16 +38,12 @@ const CreatePost = ({ open, setOpen }) => {
 
     try {
       setLoading(true);
-      const res = await axios.post(
-        "https://short-platfrom.onrender.com/api/v1/post/addpost",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        }
-      );
+      const res = await api.post("/post/addpost", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
+      });
       if (res.data.success) {
         // Added safety check for posts array
         dispatch(setPosts([res.data.post, ...(posts || [])]));

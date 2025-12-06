@@ -1,9 +1,9 @@
-import axios from "axios";
 import { useState } from "react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import api from "@/services/api";
 
 const Signup = () => {
   const [input, setInput] = useState({
@@ -21,16 +21,12 @@ const Signup = () => {
     console.log(input);
     try {
       setLoading(true);
-      const res = await axios.post(
-        "https://short-platfrom.onrender.com/api/v1/user/register",
-        input,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
+      const res = await api.post("/user/register", input, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
       if (res.data.success) {
         navigate("/login");
         toast.success(res.data.message);

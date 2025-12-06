@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { Bookmark, MessageCircle, MoreHorizontal, Send } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import CommentDialog from "./CommentDialog";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import { toast } from "sonner";
 import { setPosts, setSelectedPost } from "@/redux/postSlice";
-import { Badge } from "./ui/badge";
+import { Badge } from "../ui/badge";
+import api from "@/services/api";
 
 const Post = ({ post }) => {
   const [text, setText] = useState("");
@@ -43,10 +43,9 @@ const Post = ({ post }) => {
   const likeOrDislikeHandler = async () => {
     try {
       const action = liked ? "dislike" : "like";
-      const res = await axios.get(
-        `https://short-platfrom.onrender.com/api/v1/post/${post._id}/${action}`,
-        { withCredentials: true }
-      );
+      const res = await api.get(`/post/${post._id}/${action}`, {
+        withCredentials: true,
+      });
       console.log(res.data);
       if (res.data.success) {
         const updatedLikes = liked ? postLike - 1 : postLike + 1;
@@ -57,11 +56,11 @@ const Post = ({ post }) => {
         const updatedPostData = posts.map((p) =>
           p._id === post._id
             ? {
-                ...p,
-                likes: liked
-                  ? p.likes.filter((id) => id !== user._id)
-                  : [...p.likes, user._id],
-              }
+              ...p,
+              likes: liked
+                ? p.likes.filter((id) => id !== user._id)
+                : [...p.likes, user._id],
+            }
             : p
         );
         dispatch(setPosts(updatedPostData));
@@ -74,8 +73,8 @@ const Post = ({ post }) => {
 
   const commentHandler = async () => {
     try {
-      const res = await axios.post(
-        `https://short-platfrom.onrender.com/api/v1/post/${post._id}/comment`,
+      const res = await api.post(
+        `/post/${post._id}/comment`,
         { text },
         {
           headers: {
@@ -104,10 +103,9 @@ const Post = ({ post }) => {
 
   const deletePostHandler = async () => {
     try {
-      const res = await axios.delete(
-        `https://short-platfrom.onrender.com/api/v1/post/delete/${post?._id}`,
-        { withCredentials: true }
-      );
+      const res = await api.delete(`/post/delete/${post?._id}`, {
+        withCredentials: true,
+      });
       if (res.data.success) {
         const updatedPostData = posts.filter(
           (postItem) => postItem?._id !== post?._id
@@ -123,10 +121,9 @@ const Post = ({ post }) => {
 
   const bookmarkHandler = async () => {
     try {
-      const res = await axios.get(
-        `https://short-platfrom.onrender.com/api/v1/post/${post?._id}/bookmark`,
-        { withCredentials: true }
-      );
+      const res = await api.get(`/post/${post?._id}/bookmark`, {
+        withCredentials: true,
+      });
       if (res.data.success) {
         toast.success(res.data.message);
       }
@@ -138,8 +135,8 @@ const Post = ({ post }) => {
   const followOrUnfollowHandler = async () => {
     try {
       const action = followed ? "unfollow" : "follow";
-      const res = await axios.post(
-        `https://short-platfrom.onrender.com/api/v1/user/${post.author._id}/${action}`,
+      const res = await api.post(
+        `/user/${post.author._id}/${action}`,
         {},
         { withCredentials: true }
       );
@@ -152,11 +149,11 @@ const Post = ({ post }) => {
             const updatedUsersData = users.map((u) =>
               u._id === post.author._id
                 ? {
-                    ...u,
-                    followers: newFollowedState
-                      ? [...u.followers, user._id]
-                      : u.followers.filter((id) => id !== user._id),
-                  }
+                  ...u,
+                  followers: newFollowedState
+                    ? [...u.followers, user._id]
+                    : u.followers.filter((id) => id !== user._id),
+                }
                 : u
             );
 

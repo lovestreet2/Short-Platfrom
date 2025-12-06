@@ -1,3 +1,4 @@
+// 
 {
   "compilerOptions": {
     "baseUrl": ".",
@@ -6,13 +7,7 @@
     },
     "typeRoots": [
       "./node_modules/@types"
-    ],
-    "types": [
-      "node", // You can add other types here as needed
-      "babel__core",
-      "babel__template",
-      "babel__traverse",
-      "prop-types"
     ]
+    // Removed "types" completely
   }
 }

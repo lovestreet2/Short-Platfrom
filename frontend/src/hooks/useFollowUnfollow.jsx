@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import api from "@/services/api";
 
 const useFollowUnfollow = () => {
   const [loading, setLoading] = useState(false);
@@ -22,8 +23,8 @@ const useFollowUnfollow = () => {
       }
 
       // Make the API call
-      const response = await axios.post(
-        `https://short-platfrom.onrender.com/api/v1/user/followorunfollow/${targetUserId}`,
+      const response = await api.post(
+        `/user/followorunfollow/${targetUserId}`,
         {}, // No body data needed
         {
           headers: {

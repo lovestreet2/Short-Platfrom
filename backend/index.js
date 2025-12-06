@@ -11,31 +11,54 @@ import path from "path";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 5173;
+const PORT = process.env.PORT || 5173; // ✅ FIXED PORT
 
 const __dirname = path.resolve();
 
-//middlewares
+// --------------------------
+// 🔥 CORS FIX FOR LOCAL + RENDER
+// --------------------------
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true,
+}));
+
+// --------------------------a
+// Middleware
+// --------------------------
 app.use(express.json());
 app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
-const corsOptions = {
-  origin: process.env.URL,
-  credentials: true,
-};
-app.use(cors(corsOptions));
 
-// yha pr apni api ayengi
+// --------------------------
+// API Routes
+// --------------------------
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
 app.use("/api/v1/message", messageRoute);
 
+// --------------------------
+// Serve Frontend (Production)
+// --------------------------
 app.use(express.static(path.join(__dirname, "/frontend/dist")));
+
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
 });
 
+// --------------------------
+// Start Server
+// --------------------------
 server.listen(PORT, () => {
   connectDB();
-  console.log(`Server listen at port ${PORT}`);
+
+  const localURL = `http://localhost:${PORT}`;
+  const renderURL = process.env.RENDER_EXTERNAL_URL || "Render URL not set";
+
+  console.log("==========================================");
+  console.log(`🚀 Server running at port ${PORT}`);
+  console.log(`🔗 Local URL: ${localURL}`);
+  console.log(`🌐 Render Public URL: ${renderURL}`);
+  console.log("==========================================");
 });
+

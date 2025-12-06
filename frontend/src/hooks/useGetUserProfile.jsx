@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import useFollowUnfollow from "./useFollowUnfollow";
+import api from "@/services/api";
 
 const useGetUserProfile = ({ userId, targetUserId }) => {
   const dispatch = useDispatch();
@@ -14,10 +15,9 @@ const useGetUserProfile = ({ userId, targetUserId }) => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const res = await axios.get(
-          `https://short-platfrom.onrender.com/api/v1/user/${userId}/profile`,
-          { withCredentials: true }
-        );
+        const res = await api.get(`/user/${userId}/profile`, {
+          withCredentials: true,
+        });
         if (res.data.success) {
           dispatch(setUserProfile(res.data.user));
           setUserProfile(res.data.user);

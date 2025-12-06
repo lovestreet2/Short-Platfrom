@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import axios from "axios";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { setAuthUser } from "@/redux/authSlice";
+import api from "@/services/api";
 
 const Login = () => {
   const [input, setInput] = useState({
@@ -22,20 +22,16 @@ const Login = () => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
-  const signupHandler = async (e) => {
+  const signinHandler = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await axios.post(
-        "https://short-platfrom.onrender.com/api/v1/user/login",
-        input,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
+      const res = await api.post("/user/login", input, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
       if (res.data.success) {
         dispatch(setAuthUser(res.data.user));
         navigate("/");
@@ -47,7 +43,7 @@ const Login = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(error?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -61,7 +57,7 @@ const Login = () => {
   return (
     <div className="flex items-center w-screen h-screen justify-center">
       <form
-        onSubmit={signupHandler}
+        onSubmit={signinHandler}
         className="shadow-lg flex flex-col gap-5 p-8"
       >
         <div className="my-4">

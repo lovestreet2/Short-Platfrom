@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { setSelectedUser } from "@/redux/authSlice";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 import { MessageCircleCode } from "lucide-react";
 import Messages from "./Messages";
-import axios from "axios";
 import { setMessages } from "@/redux/chatSlice";
+import api from "@/services/api";
 
 const ChatPage = () => {
   const messagesEndRef = useRef(null);
@@ -20,8 +20,8 @@ const ChatPage = () => {
 
   const sendMessageHandler = async (receiverId) => {
     try {
-      const res = await axios.post(
-        `https://short-platfrom.onrender.com/api/v1/message/send/${receiverId}`,
+      const res = await api.post(
+        `/message/send/${receiverId}`,
         { textMessage },
         {
           headers: {
@@ -72,9 +72,8 @@ const ChatPage = () => {
                 <div className="flex flex-col">
                   <span className="font-medium">{suggestedUser?.username}</span>
                   <span
-                    className={`text-xs font-bold ${
-                      isOnline ? "text-green-600" : "text-red-600"
-                    } `}
+                    className={`text-xs font-bold ${isOnline ? "text-green-600" : "text-red-600"
+                      } `}
                   >
                     {isOnline ? "online" : "offline"}
                   </span>
