@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  root: ".",  // if frontend folder is nested, set root: "./frontend"
+  root: ".", // or "frontend" if nested
   plugins: [react()],
   resolve: {
     alias: {
@@ -15,9 +15,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes("node_modules")) {
-            return "vendor";
-          }
+          if (id.includes("node_modules")) return "vendor";
         },
       },
     },
