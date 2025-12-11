@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "vercel-build": "vite build",
+    "build": "vite build",
     "dev": "nodemon backend/index.js",
     "vite build": "npm install && npm install --prefix frontend && npm run build --prefix frontend",
     "start": "nodemon backend/index.js"
