@@ -6,38 +6,39 @@ import connectDB from "./utils/db.js";
 import userRoute from "./routes/user.routes.js";
 import postRoute from "./routes/post.route.js";
 import messageRoute from "./routes/message.route.js";
-import { app, server } from "./socket/socket.js";
+import { app, server } from "./socket/socket.js"; // your socket.io server
 import path from "path";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 5173; // ✅ FIXED PORT
-
+const PORT = process.env.PORT || 5173;
 const __dirname = path.resolve();
 
+// --------------------------
+// CORS setup
+// --------------------------
 const allowedOrigins = [
-  "http://localhost:8000", // local dev
-  "https://short-platfrom.onrender.com", // production
+  "http://localhost:8000",
+  "https://short-platfrom.onrender.com",
 ];
 
-// --------------------------
-// 🔥 CORS FIX FOR LOCAL + RENDER
-// --------------------------
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps or curl)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
-        return callback(new Error(msg), false);
+      if (!allowedOrigins.includes(origin)) {
+        return callback(
+          new Error(`CORS policy does not allow origin: ${origin}`),
+          false
+        );
       }
       return callback(null, true);
     },
     credentials: true,
   })
 );
-// --------------------------a
+
+// --------------------------
 // Middleware
 // --------------------------
 app.use(express.json());
@@ -57,22 +58,18 @@ app.use("/api/v1/message", messageRoute);
 app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+  res.sendFile(path.join(__dirname, "/frontend/dist/index.html"));
 });
 
 // --------------------------
 // Start Server
 // --------------------------
-server.listen(PORT, () => {
-  connectDB();
-
-  const localURL = `http://localhost:${PORT}`;
-  const renderURL = process.env.RENDER_EXTERNAL_URL || "Render URL not set";
+server.listen(PORT, async () => {
+  await connectDB();
 
   console.log("==========================================");
   console.log(`🚀 Server running at port ${PORT}`);
-  console.log(`🔗 Local URL: ${localURL}`);
-  console.log(`🌐 Render Public URL: ${renderURL}`);
+  console.log(`🔗 Local URL: http://localhost:${PORT}`);
+  console.log(`🌐 Render Public URL: ${process.env.RENDER_EXTERNAL_URL || "N/A"}`);
   console.log("==========================================");
 });
-
