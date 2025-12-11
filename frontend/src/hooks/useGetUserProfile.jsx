@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useDispatch } from "react-redux";
 import useFollowUnfollow from "./useFollowUnfollow";
 import api from "@/services/api";
+import { setUserProfile } from "@/redux/authSlice";
 
 const useGetUserProfile = ({ userId, targetUserId }) => {
   const dispatch = useDispatch();
@@ -24,10 +24,10 @@ const useGetUserProfile = ({ userId, targetUserId }) => {
           setIsFollowing(res.data.user.following.includes(targetUserId));
         }
       } catch (error) {
-        console.log(error);
+        console.error("Error fetching user profile:", error);
       }
     };
-    fetchUserProfile();
+    if (userId) fetchUserProfile();
   }, [userId, targetUserId, dispatch]);
 
   const handleFollowUnfollow = async () => {

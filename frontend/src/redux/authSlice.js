@@ -9,48 +9,90 @@ const authSlice = createSlice({
     selectedUser: null,
   },
   reducers: {
-    // actions
+    // Set logged-in user
     setAuthUser: (state, action) => {
       state.user = action.payload;
     },
+
+    // Suggested users list
     setSuggestedUsers: (state, action) => {
       state.suggestedUsers = action.payload;
     },
+
+    // Set profile of viewed user
     setUserProfile: (state, action) => {
       state.userProfile = action.payload;
     },
+
+    // Select a user (optional)
     setSelectedUser: (state, action) => {
       state.selectedUser = action.payload;
     },
+
+    // Follow/Unfollow user
     followOrUnfollowUser: (state, action) => {
       const { targetUserId, followed } = action.payload;
 
-      // Update suggested users list
-      const updatedSuggestedUsers = state.suggestedUsers.map((user) => {
+      // Update suggested users
+      state.suggestedUsers = state.suggestedUsers.map((user) => {
         if (user._id === targetUserId) {
           user.followers = followed
-            ? [...user.followers, state.user._id] // Add logged-in user to followers list
-            : user.followers.filter((id) => id !== state.user._id); // Remove logged-in user from followers list
+            ? [...user.followers, state.user._id]
+            : user.followers.filter((id) => id !== state.user._id);
         }
         return user;
       });
 
-      state.suggestedUsers = updatedSuggestedUsers;
-
-      // Update user profile (only if the target user is the logged-in user)
+      // Update userProfile following if logged-in user profile
       if (state.userProfile?._id === state.user._id) {
         state.userProfile.following = followed
-          ? [...state.userProfile.following, targetUserId] // Add to following list
-          : state.userProfile.following.filter((id) => id !== targetUserId); // Remove from following list
+          ? [...state.userProfile.following, targetUserId]
+          : state.userProfile.following.filter((id) => id !== targetUserId);
+      }
+    },
+
+    // ---------- NEW ACTIONS ----------
+
+    // Add a post to the logged-in user's profile
+    addPostToProfile: (state, action) => {
+      if (state.userProfile) {
+        state.userProfile.posts = [action.payload, ...state.userProfile.posts];
+      }
+    },
+
+    // Update userProfile posts (replace all posts)
+    setProfilePosts: (state, action) => {
+      if (state.userProfile) {
+        state.userProfile.posts = action.payload;
+      }
+    },
+
+    // Update userProfile bookmarks
+    setProfileBookmarks: (state, action) => {
+      if (state.userProfile) {
+        state.userProfile.bookmarks = action.payload;
+      }
+    },
+
+    // Update userProfile general info (bio, username, avatar, etc.)
+    updateUserProfileInfo: (state, action) => {
+      if (state.userProfile) {
+        state.userProfile = { ...state.userProfile, ...action.payload };
       }
     },
   },
 });
+
 export const {
   setAuthUser,
   setSuggestedUsers,
   setUserProfile,
   setSelectedUser,
   followOrUnfollowUser,
+  addPostToProfile,
+  setProfilePosts,
+  setProfileBookmarks,
+  updateUserProfileInfo,
 } = authSlice.actions;
+
 export default authSlice.reducer;
