@@ -4,8 +4,6 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "vercel-build": "vite build",
-    "build": "vite build",
     "dev": "nodemon backend/index.js",
     "vite build": "npm install && npm install --prefix frontend && npm run build --prefix frontend",
     "start": "nodemon backend/index.js"
@@ -35,8 +33,6 @@
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^5.1.2",
-    "concurrently": "^9.2.1",
-    "vite": "^7.2.7"
+    "concurrently": "^9.2.1"
   }
 }
